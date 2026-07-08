@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+.env.local
+.env.example
+.sql
+.sqlite
+.DS_Store
+supabase/migrations/20260708021500_create_kanban_schema.sql
