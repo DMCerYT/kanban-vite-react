@@ -2,6 +2,20 @@ import { addDaysIso } from "./date";
 import { colors } from "./storage";
 import { supabase } from "./supabaseClient";
 
+export function describeKanbanError(error) {
+  if (!error) return "No se pudo completar la operacion.";
+  if (error.code === "42P01") {
+    return "La base de datos todavia no tiene las tablas Kanban. Ejecuta la migracion SQL en Supabase y vuelve a intentar.";
+  }
+  if (error.code === "42501") {
+    return "Supabase bloqueo la operacion por permisos. Revisa que la migracion tenga RLS y GRANT para el rol authenticated.";
+  }
+  if (error.message?.includes("JWT")) {
+    return "La sesion de Supabase no esta vigente. Cierra sesion y vuelve a entrar.";
+  }
+  return error.message || "No se pudo completar la operacion.";
+}
+
 function requireSupabase() {
   if (!supabase) {
     throw new Error("Supabase no esta configurado. Revisa VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY.");

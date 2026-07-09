@@ -11,6 +11,7 @@ import {
   createColumn,
   createProject,
   createTask,
+  describeKanbanError,
   deleteColumn,
   deleteProject,
   deleteTask,
@@ -100,7 +101,7 @@ export default function App() {
       try {
         await updateProjectAbout(activeProject.id, activeProject.about || "");
       } catch (error) {
-        setError(error.message);
+        setError(describeKanbanError(error));
       } finally {
         setSavingAbout(false);
       }
@@ -120,7 +121,7 @@ export default function App() {
       setState({ ...nextState, activeProjectId });
       hasLoadedRef.current = true;
     } catch (error) {
-      setError(error.message);
+      setError(describeKanbanError(error));
     } finally {
       setLoading(false);
     }
@@ -142,7 +143,7 @@ export default function App() {
       await action();
       await refreshKanban(preferredProjectId);
     } catch (error) {
-      setError(error.message);
+      setError(describeKanbanError(error));
     }
   }
 
@@ -159,7 +160,7 @@ export default function App() {
       setDateFilter("all");
       await refreshKanban(project.id);
     } catch (error) {
-      setError(error.message);
+      setError(describeKanbanError(error));
     }
   }
 
@@ -273,6 +274,25 @@ export default function App() {
       <main className="auth-page">
         <section className="auth-card">
           <p className="auth-copy">Cargando tu tablero...</p>
+        </section>
+      </main>
+    );
+  }
+
+  if (!activeProject) {
+    return (
+      <main className="auth-page">
+        <section className="auth-card">
+          <div className="brand">
+            <div className="brand-mark" aria-hidden="true">K</div>
+            <div>
+              <h1>Kanban Personal</h1>
+              <span>Base de datos pendiente</span>
+            </div>
+          </div>
+          <p className="auth-copy">{error || "No se pudo cargar tu tablero."}</p>
+          <button className="btn" type="button" onClick={() => refreshKanban()}>Reintentar</button>
+          <button className="link-button" type="button" onClick={handleLogout}>Cerrar sesion</button>
         </section>
       </main>
     );
